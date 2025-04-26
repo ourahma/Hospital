@@ -1,12 +1,11 @@
 package com.ourahma.hospital;
 
-import com.ourahma.hospital.entities.Medcin;
-import com.ourahma.hospital.entities.Patient;
-import com.ourahma.hospital.entities.RendezVous;
-import com.ourahma.hospital.entities.StatusRDV;
+import com.ourahma.hospital.entities.*;
+import com.ourahma.hospital.repositories.ConsultationRepository;
 import com.ourahma.hospital.repositories.MedcinRepository;
 import com.ourahma.hospital.repositories.PatientRepository;
 import com.ourahma.hospital.repositories.RendezVousRepository;
+import com.ourahma.hospital.service.IHospitalService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,9 +22,10 @@ public class HospitalApplication {
 		SpringApplication.run(HospitalApplication.class, args);
 	}
 	@Bean
-	CommandLineRunner start(PatientRepository patientRepository,
-							MedcinRepository medcinRepository,
-							RendezVousRepository rendezVousRepository) {
+	CommandLineRunner start(IHospitalService iHospitalService,
+							PatientRepository patientRepository,
+							RendezVousRepository rendezVousRepository,
+							MedcinRepository medcinRepository) {
 		return args -> {
 			Stream.of("Mohamed","Hassan","Najat")
 					.forEach(name->{
@@ -33,7 +33,7 @@ public class HospitalApplication {
 						p.setNom(name);
 						p.setMalade(false);
 						p.setDateNaissance(new Date());
-						patientRepository.save(p);
+						iHospitalService.savePatient(p);
 					});
 			Stream.of("aymane","Hanane","Yassmine")
 					.forEach(name->{
@@ -41,7 +41,7 @@ public class HospitalApplication {
 						m.setEmail(name+"@gmail.com");
 						m.setNom(name);
 						m.setSpecialite(Math.random()>0.5?"Cardio":"Dentitste");
-						medcinRepository.save(m);
+						iHospitalService.saveMedcin(m);
 					});
 			Patient patient = patientRepository.findById(1L).orElse(null);
 			Patient patient1 = patientRepository.findByNom("Mohamed");
@@ -53,7 +53,16 @@ public class HospitalApplication {
 			rendezVous.setStatus(StatusRDV.PENDING);
 			rendezVous.setMedcin(medcin);
 			rendezVous.setPatient(patient);
-			rendezVousRepository.save(rendezVous);
+			RendezVous savedRDV = iHospitalService.saveRDV(rendezVous);
+			System.out.println(savedRDV.getId());
+
+			RendezVous rendezVous1=rendezVousRepository.findAll().get(0);
+			Consultation consultation=new Consultation();
+			consultation.setDateConsultation(rendezVous1.getDate());
+			consultation.setRendezVous(rendezVous1);
+			consultation.setRapport("Rapport de la consultation .....");
+			iHospitalService.saveConsultation(consultation);
+
 		};
 	}
 }
