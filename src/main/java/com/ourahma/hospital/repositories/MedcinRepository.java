@@ -1,4 +1,8 @@
 package com.ourahma.hospital.repositories;
 
-public interface MedcinRepository {
+import com.ourahma.hospital.entities.Medcin;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MedcinRepository extends JpaRepository<Medcin, Long> {
+    Medcin findByNom(String nom);
 }

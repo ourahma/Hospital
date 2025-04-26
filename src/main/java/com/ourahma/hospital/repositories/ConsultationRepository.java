@@ -1,7 +1,7 @@
 package com.ourahma.hospital.repositories;
 
-import com.ourahma.hospital.entities.Medcin;
+import com.ourahma.hospital.entities.Consultation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MedcinRepository extends JpaRepository<Medcin, Long> {
+public interface ConsultationRepository extends JpaRepository<Consultation, Long> {
 }
